@@ -3756,3 +3756,51 @@ button {
     width: 100%;
   }
 }
+.emailAuthDivider {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.emailAuthDivider::before,
+.emailAuthDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.emailAuthDivider span {
+  padding: 0 12px;
+}
+
+.emailAuth {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.emailAuth input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font-size: 15px;
+}
+
+.emailButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #c7ff65;
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+}

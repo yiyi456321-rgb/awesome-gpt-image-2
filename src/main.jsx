@@ -459,7 +459,7 @@ const copy = {
     authRequired: '登录后即可生成测试图。',
     signIn: '登录',
     signInTitle: '登录后生成测试图',
-    signInSubtitle: '使用 Google 或观猹登录，解锁生图测试、积分和会员能力。',
+    signInSubtitle: '使用账号密码登录，解锁生图测试、积分和会员能力。',
     authRateLimited: '登录尝试过于频繁，请稍后再试。',
     googleNotConfigured: 'Google 登录还没有启用。',
     continueWithGoogle: '使用 Google 登录',
@@ -1315,6 +1315,8 @@ function AuthModal({ open, language, initialErrorCode, onClose }) {
   const t = copy[language];
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   useBodyScrollLock(open);
 
   useEffect(() => {
@@ -1326,29 +1328,27 @@ function AuthModal({ open, language, initialErrorCode, onClose }) {
     }
     setStatus('idle');
     setMessage('');
+    setEmail('');
+    setPassword('');
   }, [open, initialErrorCode, language]);
 
   if (!open) return null;
 
-  const redirectTo = `${window.location.origin}${window.location.pathname}`;
-  const isLoading = status === 'loading-google' || status === 'loading-watcha';
+  const isLoading = status === 'loading-email';
 
+  // 原来的 Google 和观猹登录函数保留，但界面不再显示按钮
   async function handleGoogleSignIn() {
     if (!isSupabaseConfigured || !supabase) {
       setStatus('error');
       setMessage(t.authNotConfigured);
       return;
     }
-
     setStatus('loading-google');
     setMessage('');
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo
-      }
+      options: { redirectTo: `${window.location.origin}${window.location.pathname}` }
     });
-
     if (error) {
       setStatus('error');
       setMessage(authErrorMessage(error, language));
@@ -1361,10 +1361,42 @@ function AuthModal({ open, language, initialErrorCode, onClose }) {
       setMessage(t.authNotConfigured);
       return;
     }
-
     setStatus('loading-watcha');
     setMessage('');
-    window.location.assign(`/api/auth/watcha/start?returnTo=${encodeURIComponent(redirectTo)}`);
+    window.location.assign(`/api/auth/watcha/start?returnTo=${encodeURIComponent(`${window.location.origin}${window.location.pathname}`)}`);
+  }
+
+  async function handleEmailSignIn() {
+    if (!isSupabaseConfigured || !supabase) {
+      setStatus('error');
+      setMessage(t.authNotConfigured);
+      return;
+    }
+    const nextEmail = email.trim();
+    if (!nextEmail || !nextEmail.includes('@')) {
+      setStatus('error');
+      setMessage('请输入有效的邮箱地址');
+      return;
+    }
+    if (!password || password.length < 6) {
+      setStatus('error');
+      setMessage('密码至少需要 6 位');
+      return;
+    }
+    setStatus('loading-email');
+    setMessage('');
+    const { error } = await supabase.auth.signInWithPassword({
+      email: nextEmail,
+      password
+    });
+    if (error) {
+      setStatus('error');
+      setMessage('邮箱或密码错误');
+      return;
+    }
+    setStatus('sent');
+    setMessage('登录成功！');
+    window.setTimeout(() => onClose(), 800);
   }
 
   return (
@@ -1384,16 +1416,39 @@ function AuthModal({ open, language, initialErrorCode, onClose }) {
         </div>
         <h2 id="auth-title">{t.signInTitle}</h2>
         <p>{t.signInSubtitle}</p>
-        <div className="authProviders" aria-label={t.signInTitle}>
-          <button className="googleButton" type="button" onClick={handleGoogleSignIn} disabled={isLoading}>
-            {status === 'loading-google' ? <LoaderCircle className="spinIcon" size={18} /> : <GoogleIcon />}
-            {t.continueWithGoogle}
-          </button>
-          <button className="watchaButton" type="button" onClick={handleWatchaSignIn} disabled={isLoading}>
-            {status === 'loading-watcha' ? <LoaderCircle className="spinIcon" size={18} /> : <WatchaIcon />}
-            {t.continueWithWatcha}
+
+        {/* Google 和观猹按钮已隐藏，只保留账号密码登录 */}
+        <div className="emailAuth" style={{ marginTop: '16px' }}>
+          <input
+            type="email"
+            placeholder="邮箱地址"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            disabled={isLoading}
+            autoComplete="email"
+          />
+          <input
+            type="password"
+            placeholder="密码"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            disabled={isLoading}
+            autoComplete="current-password"
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') handleEmailSignIn();
+            }}
+          />
+          <button
+            className="emailButton"
+            type="button"
+            onClick={handleEmailSignIn}
+            disabled={isLoading}
+          >
+            {status === 'loading-email' ? <LoaderCircle className="spinIcon" size={18} /> : <LogIn size={18} />}
+            登录
           </button>
         </div>
+
         {message ? (
           <p className={cx('authMessage', status === 'error' && 'error', status === 'sent' && 'sent')}>
             {message}
@@ -1403,7 +1458,6 @@ function AuthModal({ open, language, initialErrorCode, onClose }) {
     </div>
   );
 }
-
 function ApiKeyModal({ open, language, apiKey, price, priceMeta, onClose, onSaved, onCleared }) {
   const t = copy[language];
   const [input, setInput] = useState('');
