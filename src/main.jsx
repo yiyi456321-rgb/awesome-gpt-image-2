@@ -1899,11 +1899,11 @@ function AccountPanel({
           <div className="apiKeySettingsIcon"><KeyRound size={22} /></div>
           <div>
             <h3>{t.apimartApiSettings}</h3>
-            <p>{apiKey ? t.apimartPersonalMode(maskApimartKey(apiKey), formatApimartPrice(apimartPrice)) : t.apimartApiSubtitle}</p>
+            <p>{apimartKey ? t.apimartPersonalMode(maskApimartKey(apimartKey), formatApimartPrice(apimartPrice)) : t.apimartApiSubtitle}</p>
           </div>
           <button type="button" onClick={onApiKeySettings}>
             <Settings size={16} />
-            {apiKey ? t.apimartManageKey : t.apimartConfigureKey}
+            {apimartKey ? t.apimartManageKey : t.apimartConfigureKey}
           </button>
         </section>
 
