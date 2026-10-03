@@ -3804,3 +3804,14 @@ button {
   font-weight: 600;
   cursor: pointer;
 }
+/* 隐藏导航栏的交流群、API、GitHub */
+.communityNavLink,
+.sponsorNavLink,
+.topbar nav a[href*="github"] {
+  display: none !important;
+}
+
+/* 隐藏 Hero 里的 GitHub 项目 和 API 按钮 */
+.heroActions .secondaryAction {
+  display: none !important;
+}
