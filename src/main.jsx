@@ -340,9 +340,9 @@ const copy = {
     navMembership: '会员',
     communityQrAlt: 'GPT-Image2 微信交流群邀请卡',
     eyebrow: '实时更新的 GPT-Image2 提示词画廊',
-    title: '从爆款图片，到可复用 Prompt。',
+    title: '我终于搭建出来啦。',
     subtitle:
-      '一个面向 GPT-Image2 创作的可视化工作台：浏览真实案例、复制 Prompt、在线测试生图、查看工业级模板，并加入创作者交流群。',
+      '一个跑了宝塔跑了vercel/netlify搞了好久才算勉强搭建好的平台哈哈哈哈。',
     explore: '浏览案例',
     githubProject: 'GitHub 项目',
     sponsorProject: 'API',
