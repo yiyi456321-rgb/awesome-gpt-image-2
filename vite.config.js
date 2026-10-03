@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
-  plugins: [localVercelApi(), react()],
+  plugins: [react()],
   publicDir: 'data',
   build: {
     outDir: 'dist',
